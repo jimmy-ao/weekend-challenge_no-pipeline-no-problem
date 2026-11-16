@@ -113,8 +113,12 @@ def test_full_flow(aws):
     key = job["upload"]["fields"]["key"]
     s3.put_object(Bucket=BUCKET, Key=key, Body=photo_bytes())
 
-    prepared = handlers.prepare({"jobId": job["jobId"], "key": key, "bucket": BUCKET}, None)
+    prepared = handlers.prepare({"jobId": job["jobId"], "key": key, "bucket": BUCKET, "executionId": "exec-1"}, None)
     assert prepared["formats"] == ["story", "linkedin"] and prepared["focusX"] == 0.7
+    # A retry by the same execution gets the lock back; another execution is a duplicate upload.
+    assert handlers.prepare({"jobId": job["jobId"], "key": key, "executionId": "exec-1"}, None) == prepared
+    with pytest.raises(handlers.DuplicateUpload):
+        handlers.prepare({"jobId": job["jobId"], "key": key, "executionId": "exec-2"}, None)
     with pytest.raises(handlers.DuplicateUpload):
         handlers.prepare({"jobId": job["jobId"], "key": key}, None)
 
@@ -148,6 +152,7 @@ def test_validation(aws):
     assert call(app, "POST /jobs", {"contentType": "image/gif", "size": 10})[0] == 400
     assert call(app, "POST /jobs", {"contentType": "image/jpeg", "size": 10**9})[0] == 400
     assert call(app, "POST /jobs", {"contentType": "image/jpeg", "size": 10, "formats": ["nope"]})[0] == 400
+    assert call(app, "POST /jobs", {"contentType": "image/jpeg", "size": 10, "formats": [["story"]]})[0] == 400
     assert call(app, "POST /jobs", {"contentType": "image/jpeg", "size": 10, "focusX": 2})[0] == 400
     assert call(app, "GET /jobs/{jobId}", params={"jobId": "../etc"})[0] == 404
 
@@ -291,3 +296,69 @@ def test_frame_choice():
     assert imaging.frame_key_for(fmt(1080, 1920, "story"), frames) == "P"
     assert imaging.frame_key_for(fmt(1200, 627, "landscape"), frames) == "L"
     assert imaging.frame_key_for(fmt(1200, 627, "landscape"), {}) is None
+
+
+def test_only_the_creator_changes_an_event(aws):
+    s3, app, handlers = aws
+    _, ev = call(app, "POST /events", {"name": "Alice conf"}, sub="alice")
+    params = {"eventId": ev["eventId"]}
+    assert ev["canEdit"] is True and "createdBy" not in ev and "ownerSub" not in ev
+
+    # Bob sees and uses the event, without learning who made it, but cannot touch it.
+    seen = call(app, "GET /events", sub="bob")[1]["events"][0]
+    assert seen["canEdit"] is False and "alice" not in json.dumps(seen)
+    assert call(app, "PUT /events/{eventId}", {"name": "Bob conf"}, params, sub="bob")[0] == 403
+    assert call(app, "POST /events/{eventId}/logo", {"contentType": "image/png"}, params, sub="bob")[0] == 403
+    assert call(app, "DELETE /events/{eventId}", None, params, sub="bob")[0] == 403
+    assert call(app, "POST /jobs", {"eventId": ev["eventId"], "contentType": "image/jpeg", "size": 10}, sub="bob")[0] == 201
+
+    assert call(app, "PUT /events/{eventId}", {"name": "Alice conf 2"}, params, sub="alice")[1]["name"] == "Alice conf 2"
+
+    # An event saved before ownerSub existed belongs to the email in createdBy.
+    legacy = "0" * 32
+    boto3.resource("dynamodb", region_name=REGION).Table("events").put_item(Item={"eventId": legacy, "name": "Old", "createdBy": "alice@example.com"})
+    assert call(app, "PUT /events/{eventId}", {"name": "Old 2"}, {"eventId": legacy}, sub="bob")[0] == 403
+    assert call(app, "PUT /events/{eventId}", {"name": "Old 2"}, {"eventId": legacy}, sub="alice")[0] == 200
+    assert call(app, "DELETE /events/{eventId}", None, params, sub="alice")[0] == 204
+
+
+def test_failed_and_stuck_jobs(aws):
+    s3, app, handlers = aws
+    table = boto3.resource("dynamodb", region_name=REGION).Table("jobs")
+    params = lambda job: {"jobId": job["jobId"]}
+
+    def fail(job, code, detail):  # what the MarkFailed state writes
+        table.update_item(
+            Key={"jobId": job["jobId"]},
+            UpdateExpression="SET #s = :f, errorCode = :c, errorDetail = :d",
+            ExpressionAttributeNames={"#s": "status"},
+            ExpressionAttributeValues={":f": "FAILED", ":c": code, ":d": detail},
+        )
+
+    # A crash: the producer gets a generic message, never the stack trace.
+    _, job = call(app, "POST /jobs", {"contentType": "image/jpeg", "size": 10})
+    fail(job, "KeyError", json.dumps({"errorMessage": "'secret'", "errorType": "KeyError", "stackTrace": ["  File \"/var/task/handlers.py\", line 1"]}))
+    _, got = call(app, "GET /jobs/{jobId}", params=params(job))
+    assert got["status"] == "FAILED" and got["error"] == app.GENERIC_JOB_ERROR
+    assert "errorDetail" not in got and "/var/task" not in json.dumps(got)
+
+    # A photo the pipeline refused on purpose: its own message is shown.
+    _, job = call(app, "POST /jobs", {"contentType": "image/jpeg", "size": 10})
+    key = job["upload"]["fields"]["key"]
+    s3.put_object(Bucket=BUCKET, Key=key, Body=b"not an image")
+    with pytest.raises(handlers.InvalidUpload) as exc:
+        handlers.prepare({"jobId": job["jobId"], "key": key}, None)
+    assert "cannot identify" not in str(exc.value)  # Pillow's own text stays in the logs
+    fail(job, "InvalidUpload", json.dumps({"errorMessage": str(exc.value), "errorType": "InvalidUpload", "stackTrace": ["x"]}))
+    assert call(app, "GET /jobs/{jobId}", params=params(job))[1]["error"] == str(exc.value)
+
+    # PROCESSING for longer than any execution can run: reported as failed, and deletable.
+    _, job = call(app, "POST /jobs", {"contentType": "image/jpeg", "size": 10})
+    s3.put_object(Bucket=BUCKET, Key=job["upload"]["fields"]["key"], Body=photo_bytes((400, 300)))
+    handlers.prepare({"jobId": job["jobId"], "key": job["upload"]["fields"]["key"]}, None)
+    assert call(app, "GET /jobs/{jobId}", params=params(job))[1]["status"] == "PROCESSING"
+    assert call(app, "DELETE /jobs/{jobId}", params=params(job))[0] == 409
+    table.update_item(Key={"jobId": job["jobId"]}, UpdateExpression="SET startedAt = :t", ExpressionAttributeValues={":t": 1})
+    _, got = call(app, "GET /jobs/{jobId}", params=params(job))
+    assert got["status"] == "FAILED" and "timed out" in got["error"]
+    assert call(app, "DELETE /jobs/{jobId}", params=params(job))[0] == 204

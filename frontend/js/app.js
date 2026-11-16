@@ -26,6 +26,9 @@ const state = {
 const MAX_LOGO_BYTES = 2 * 1024 * 1024;
 const MAX_BANNER_BYTES = 5 * 1024 * 1024;
 const MAX_FRAME_BYTES = 8 * 1024 * 1024;
+const MAX_EVENT_IMAGE_PIXELS = 40e6; // same limit as the pipeline (imaging.py), which leaves a larger image out
+const tooManyPixels = (bitmap) => Boolean(bitmap) && bitmap.width * bitmap.height > MAX_EVENT_IMAGE_PIXELS;
+const TOO_MANY_PIXELS = 'Event images must be 40 megapixels or less.';
 const FRAME_SLOTS = [
   { shape: 'square', label: 'Square 1:1', size: '1080×1080', uses: 'Instagram post' },
   { shape: 'portrait', label: 'Portrait 4:5', size: '1080×1350', uses: 'Instagram portrait' },
@@ -101,7 +104,14 @@ function renderEventSelect() {
     ...state.events.map((e) => el('option', { value: e.eventId, text: e.name })),
   );
   sel.value = state.eventId;
-  $('edit-event-btn').disabled = !state.eventId;
+  syncEditButton();
+}
+
+// Events are shared, but only the producer who created one can change it (the API enforces it).
+function syncEditButton() {
+  const ev = currentEvent();
+  $('edit-event-btn').disabled = !ev?.canEdit;
+  $('edit-event-btn').title = ev && !ev.canEdit ? 'Only the producer who created this event can edit it.' : '';
 }
 
 async function loadEvents(selectId) {
@@ -176,6 +186,10 @@ async function pickFrame(shape, file) {
   const bitmap = await createImageBitmap(file).catch(() => null);
   if (!bitmap) {
     toast('That frame image could not be read.', 'error');
+    return;
+  }
+  if (tooManyPixels(bitmap)) {
+    toast(TOO_MANY_PIXELS, 'error');
     return;
   }
   if (state.frameDraft[shape]?.url) URL.revokeObjectURL(state.frameDraft[shape].url);
@@ -262,6 +276,8 @@ async function saveEvent() {
   const f = form.elements;
   const data = readEventForm();
   const mode = bannerMode(); // 'generated' | 'banner' | 'frame': only the chosen style's files are kept
+  // The hashtag field is hidden outside "Generated": never let a half-typed value there fail the save.
+  if (mode !== 'generated' && !f.hashtag.checkValidity()) data.hashtag = state.editing?.hashtag || '';
   const logoFile = mode === 'generated' ? f.logo.files[0] : null;
   const bannerFile = mode === 'banner' ? f.banner.files[0] : null;
   const frameFiles = mode === 'frame'
@@ -282,17 +298,27 @@ async function saveEvent() {
   let ev = state.editing
     ? await api('PUT', `/events/${state.editing.eventId}`, { ...data, ...changes })
     : await api('POST', '/events', data);
+  // From here the event exists: a retry after a failed upload must update it, not create a second one.
+  if (!state.editing) {
+    state.editing = ev;
+    state.eventsStale = true;
+  }
 
   const uploads = [
     ...(logoFile ? [{ kind: 'logo', file: logoFile }] : []),
     ...(bannerFile ? [{ kind: 'banner', file: bannerFile }] : []),
     ...frameFiles.map((x) => ({ kind: 'frame', ...x })),
   ];
-  const keys = await Promise.all(uploads.map(async ({ kind, file, shape }) => {
-    const { key, upload } = await api('POST', `/events/${ev.eventId}/logo`, { contentType: file.type, kind, ...(shape ? { shape } : {}) });
-    await uploadToS3(upload, file);
-    return { kind, shape, key };
-  }));
+  let keys;
+  try {
+    keys = await Promise.all(uploads.map(async ({ kind, file, shape }) => {
+      const { key, upload } = await api('POST', `/events/${ev.eventId}/logo`, { contentType: file.type, kind, ...(shape ? { shape } : {}) });
+      await uploadToS3(upload, file);
+      return { kind, shape, key };
+    }));
+  } catch (err) {
+    throw new Error(`The event is saved, but an image did not upload (${err.message}). Press Save to try again.`);
+  }
   if (keys.length) {
     const update = { ...data };
     for (const { kind, shape, key } of keys) {
@@ -486,7 +512,7 @@ function wire() {
 
   $('event-select').addEventListener('change', (e) => {
     state.eventId = e.target.value;
-    $('edit-event-btn').disabled = !state.eventId;
+    syncEditButton();
     renderPreviews();
   });
   $('new-event-btn').addEventListener('click', () => openEventDialog(null));
@@ -497,23 +523,47 @@ function wire() {
   $('logo-input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     state.draftLogo = file ? await createImageBitmap(file).catch(() => null) : null;
+    if (tooManyPixels(state.draftLogo)) {
+      toast(TOO_MANY_PIXELS, 'error');
+      e.target.value = '';
+      state.draftLogo = null;
+    }
     drawEventPreview();
   });
   $('banner-input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     state.draftBanner = file ? await createImageBitmap(file).catch(() => null) : null;
     if (file && !state.draftBanner) toast('That banner image could not be read.', 'error');
+    if (tooManyPixels(state.draftBanner)) {
+      toast(TOO_MANY_PIXELS, 'error');
+      e.target.value = '';
+      state.draftBanner = null;
+    }
     drawEventPreview();
   });
+  const dialog = $('event-dialog');
+  dialog.querySelectorAll('[data-close-dialog]').forEach((b) => b.addEventListener('click', () => dialog.close()));
+  dialog.addEventListener('close', () => {
+    // Closed after a partly saved new event (image upload failed): show it in the list anyway.
+    if (!state.eventsStale) return;
+    state.eventsStale = false;
+    loadEvents(state.editing?.eventId).catch(() => {});
+  });
   form.addEventListener('submit', async (e) => {
-    if (e.submitter?.value !== 'save') return; // cancel / close
-    e.preventDefault();
-    if (!form.reportValidity()) return;
+    e.preventDefault(); // Save is the only submit button (Enter in a field saves too)
+    // Only the fields of the chosen banner style are checked: the form is `novalidate` because the
+    // browser refuses to submit, silently, when a hidden field is invalid.
+    const invalid = [...form.elements].find((c) => c.willValidate && c.offsetParent !== null && !c.checkValidity());
+    if (invalid) {
+      invalid.reportValidity();
+      return;
+    }
     const btn = $('save-event-btn');
     btn.disabled = true;
     try {
       const ev = await saveEvent();
-      $('event-dialog').close();
+      state.eventsStale = false;
+      dialog.close();
       await loadEvents(ev.eventId);
       toast('Event saved.');
     } catch (err) {

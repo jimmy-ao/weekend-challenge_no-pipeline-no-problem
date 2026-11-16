@@ -125,7 +125,7 @@ make dev         # frontend on http://localhost:5173 against the deployed backen
 - Invite-only user pool, no self sign-up; tokens are kept in `sessionStorage`, refreshed with the refresh token and revoked (`RevokeToken`) on sign-out.
 - The login page uses `USER_PASSWORD_AUTH`: the password goes to Cognito over TLS (never to our API). The alternative is `USER_SRP_AUTH`, where the password never leaves the browser; it needs an SRP implementation (or the Amplify library) in the frontend.
 - Password rules are checked live in the page and match the user pool policy (12+ characters, upper, lower, number). Cognito error messages are mapped to neutral texts, and user-existence errors are suppressed.
-- Every API route requires a valid Cognito ID token; jobs are scoped to their owner (`sub`), events are shared by the team.
+- Every API route requires a valid Cognito ID token; jobs are scoped to their owner (`sub`); every producer can use any event, but only its creator can change or delete it.
 - Uploads use presigned POST policies that pin the exact key, content type and maximum size; URLs expire after 5 minutes. A re-posted form cannot start a second run (the job lock in `Prepare`).
 - Pillow decompression-bomb guard (120 MP), image re-encoded, all metadata dropped, including EXIF GPS.
 - Buckets are private, TLS-only, SSE-S3; CloudFront sends CSP, HSTS, `X-Frame-Options: DENY`, `nosniff`.

@@ -10,7 +10,8 @@ Routes
   GET    /jobs                    POST /jobs  -> creates a job + presigned POST for the photo
   GET    /jobs/{jobId}            DELETE /jobs/{jobId}
 
-Events are shared by every signed-in producer; jobs are private to their owner.
+Every signed-in producer can use any event; only its creator can change or delete it.
+Jobs are private to their owner.
 """
 
 from __future__ import annotations
@@ -42,6 +43,10 @@ MAX_FRAME_BYTES = int(os.environ.get("MAX_FRAME_BYTES", str(8 * 1024 * 1024)))
 FRAME_SHAPES = ("square", "portrait", "story", "landscape")
 RETENTION_DAYS = int(os.environ.get("RETENTION_DAYS", "7"))
 URL_TTL = 3600
+# A job still PROCESSING after this long lost its execution (the state machine times out after 600 s):
+# it is reported as failed and can be deleted.
+STALE_PROCESSING_SECONDS = 900
+GENERIC_JOB_ERROR = "Something went wrong while rendering this photo. Try again."
 
 s3 = boto3.client(
     "s3",
@@ -175,8 +180,28 @@ def validate_event(data: dict, event_id: str) -> dict:
     return item
 
 
-def public_event(item: dict) -> dict:
-    out = dict(item)
+def can_edit(item: dict, who: dict) -> bool:
+    """Only the producer who created an event may change it, its images, or delete it."""
+    if item.get("ownerSub"):
+        return item["ownerSub"] == who["sub"]
+    # Events created before ownerSub existed only carry createdBy (email, or sub without one).
+    return item.get("createdBy") in (who["sub"], who.get("email"))
+
+
+def own_event(event, params) -> dict:
+    event_id = check_id(params["eventId"])
+    item = events.get_item(Key={"eventId": event_id}).get("Item")
+    if not item:
+        raise HttpError(404, "event not found")
+    if not can_edit(item, claims(event)):
+        raise HttpError(403, "only the producer who created this event can change it")
+    return item
+
+
+def public_event(item: dict, who: dict) -> dict:
+    # Who created the event stays private: the other producers only learn whether they may edit it.
+    out = {k: v for k, v in item.items() if k not in ("createdBy", "ownerSub")}
+    out["canEdit"] = can_edit(item, who)
     for kind in ("logo", "banner"):
         key = item.get(f"{kind}Key", "")
         out[f"{kind}Key"] = key
@@ -186,7 +211,7 @@ def public_event(item: dict) -> dict:
     return out
 
 
-def list_events(_event, _params):
+def list_events(event, _params):
     items, kwargs = [], {}
     while True:
         page = events.scan(**kwargs)
@@ -195,7 +220,7 @@ def list_events(_event, _params):
             break
         kwargs["ExclusiveStartKey"] = page["LastEvaluatedKey"]
     items.sort(key=lambda i: i.get("createdAt", 0), reverse=True)
-    return 200, {"events": [public_event(i) for i in items]}
+    return 200, {"events": [public_event(i, claims(event)) for i in items]}
 
 
 def create_event(event, _params):
@@ -205,16 +230,15 @@ def create_event(event, _params):
         eventId=event_id,
         createdAt=int(time.time()),
         createdBy=claims(event).get("email", claims(event)["sub"]),
+        ownerSub=claims(event)["sub"],
     )
     events.put_item(Item=item)
-    return 201, public_event(item)
+    return 201, public_event(item, claims(event))
 
 
 def update_event(event, params):
-    event_id = check_id(params["eventId"])
-    current = events.get_item(Key={"eventId": event_id}).get("Item")
-    if not current:
-        raise HttpError(404, "event not found")
+    current = own_event(event, params)
+    event_id = current["eventId"]
     item = {**current, **validate_event(body_of(event), event_id), "updatedAt": int(time.time())}
     events.put_item(Item=item)
     for field in ("logoKey", "bannerKey"):
@@ -225,23 +249,18 @@ def update_event(event, params):
     for old in (current.get("frameKeys") or {}).values():
         if old not in kept:
             s3.delete_object(Bucket=BUCKET, Key=old)
-    return 200, public_event(item)
+    return 200, public_event(item, claims(event))
 
 
-def delete_event(_event, params):
-    event_id = check_id(params["eventId"])
-    current = events.get_item(Key={"eventId": event_id}).get("Item")
-    if not current:
-        raise HttpError(404, "event not found")
+def delete_event(event, params):
+    event_id = own_event(event, params)["eventId"]
     _delete_prefix(f"logos/{event_id}/")
     events.delete_item(Key={"eventId": event_id})
     return 204, None
 
 
 def logo_upload(event, params):
-    event_id = check_id(params["eventId"])
-    if not events.get_item(Key={"eventId": event_id}).get("Item"):
-        raise HttpError(404, "event not found")
+    event_id = own_event(event, params)["eventId"]
     data = body_of(event)
     kind = text(data, "kind", 10) or "logo"
     if kind not in ("logo", "banner", "frame"):
@@ -269,8 +288,31 @@ def logo_upload(event, params):
 
 
 # --------------------------------------------------------------------------- jobs
+def job_status(item: dict) -> str:
+    status = item.get("status")
+    started = int(item.get("startedAt") or item.get("createdAt") or 0)
+    if status == "PROCESSING" and started < time.time() - STALE_PROCESSING_SECONDS:
+        return "FAILED"  # timed out or aborted execution: nothing will ever finish this job
+    return status
+
+
+def job_error(item: dict) -> str | None:
+    """What the producer may read about a failure. The raw cause (errorDetail) never leaves the table."""
+    if job_status(item) != "FAILED":
+        return None
+    if item.get("status") == "PROCESSING":
+        return "This batch timed out. Delete it and try again."
+    if item.get("errorCode") == "InvalidUpload":  # raised on purpose by the pipeline, with a message written for the producer
+        try:
+            return str(json.loads(item.get("errorDetail") or "{}").get("errorMessage") or GENERIC_JOB_ERROR)[:300]
+        except (ValueError, AttributeError):
+            pass
+    return GENERIC_JOB_ERROR
+
+
 def public_job(item: dict, with_urls: bool) -> dict:
-    out = {k: item.get(k) for k in ("jobId", "eventId", "eventName", "status", "formats", "originalName", "createdAt", "completedAt", "error")}
+    out = {k: item.get(k) for k in ("jobId", "eventId", "eventName", "formats", "originalName", "createdAt", "completedAt")}
+    out["status"], out["error"] = job_status(item), job_error(item)
     out["focusX"], out["focusY"] = item.get("focusX"), item.get("focusY")
     outputs = item.get("outputs") or []
     if with_urls and item.get("status") == "DONE":
@@ -293,7 +335,7 @@ def create_job(event, _params):
         raise HttpError(400, f"photo must be at most {MAX_UPLOAD_BYTES // (1024 * 1024)} MB")
 
     formats = data.get("formats") or sorted(FORMAT_IDS)
-    if not isinstance(formats, list) or not formats or not set(formats) <= FORMAT_IDS:
+    if not isinstance(formats, list) or not formats or not all(isinstance(f, str) and f in FORMAT_IDS for f in formats):
         raise HttpError(400, "unknown format in formats")
 
     focus = []
@@ -363,7 +405,7 @@ def list_jobs(event, _params):
 
 def delete_job(event, params):
     item = _own_job(event, params)
-    if item["status"] == "PROCESSING":
+    if job_status(item) == "PROCESSING":
         raise HttpError(409, "job is still processing")
     _delete_prefix(f"uploads/{item['jobId']}/")
     _delete_prefix(f"outputs/{item['jobId']}/")

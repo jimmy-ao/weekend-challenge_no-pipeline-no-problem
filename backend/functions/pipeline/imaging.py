@@ -17,8 +17,14 @@ from dataclasses import dataclass, field
 
 from PIL import Image, ImageCms, ImageDraw, ImageFont, ImageOps
 
-# Refuse decompression bombs, but allow large DSLR / phone photos (~ 100 MP).
-Image.MAX_IMAGE_PIXELS = 120_000_000
+# Refuse decompression bombs, but allow large DSLR / phone photos (~ 100 MP). Pillow on its own only
+# warns up to twice MAX_IMAGE_PIXELS, so _open() enforces the limits itself. Event images (logo,
+# banner, frame) get a lower one: they are decoded as RGBA by every render of every job of the event.
+MAX_PHOTO_PIXELS = 120_000_000
+MAX_EVENT_IMAGE_PIXELS = 40_000_000
+Image.MAX_IMAGE_PIXELS = MAX_PHOTO_PIXELS
+# The only decoders an upload can reach, whatever the file claims to be.
+UPLOAD_FORMATS = ("JPEG", "PNG", "WEBP")
 
 FONT_DIR = os.path.join(os.path.dirname(__file__), "fonts")
 FONT_BOLD = os.path.join(FONT_DIR, "Inter-Bold.otf")
@@ -70,9 +76,16 @@ def hex_to_rgb(value: str) -> tuple[int, int, int]:
     return tuple(int(v[i : i + 2], 16) for i in (0, 2, 4))  # type: ignore[return-value]
 
 
+def _open(data: bytes, max_pixels: int) -> Image.Image:
+    img = Image.open(io.BytesIO(data), formats=UPLOAD_FORMATS)
+    if img.width * img.height > max_pixels:
+        raise ValueError(f"image is {img.width}x{img.height}, more than {max_pixels // 1_000_000} megapixels")
+    return img
+
+
 def load_photo(data: bytes) -> Image.Image:
     """Decode an uploaded photo into an upright RGB image in sRGB, without metadata."""
-    img = Image.open(io.BytesIO(data))
+    img = _open(data, MAX_PHOTO_PIXELS)
     img.draft("RGB", (8000, 8000))  # lets libjpeg skip work on huge JPEGs
     img = ImageOps.exif_transpose(img)
     icc = img.info.get("icc_profile")
@@ -95,7 +108,7 @@ def load_photo(data: bytes) -> Image.Image:
 
 
 def load_logo(data: bytes) -> Image.Image:
-    logo = Image.open(io.BytesIO(data))
+    logo = _open(data, MAX_EVENT_IMAGE_PIXELS)
     logo = ImageOps.exif_transpose(logo)
     return logo.convert("RGBA")
 

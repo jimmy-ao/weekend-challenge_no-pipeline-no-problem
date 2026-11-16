@@ -9,7 +9,8 @@
       "Parameters": {
         "bucket.$": "$.bucket",
         "key.$": "$.key",
-        "jobId.$": "States.ArrayGetItem(States.StringSplit($.key, '/'), 1)"
+        "jobId.$": "States.ArrayGetItem(States.StringSplit($.key, '/'), 1)",
+        "executionId.$": "$$.Execution.Name"
       },
       "Next": "Prepare"
     },
@@ -99,19 +100,20 @@
     },
     "MarkFailed": {
       "Type": "Task",
-      "Comment": "Direct DynamoDB integration: no Lambda needed to record the failure on the job.",
+      "Comment": "Direct DynamoDB integration: no Lambda needed to record the failure on the job. errorDetail (the raw cause, stack trace included) stays in the table: the API only returns a message.",
       "Resource": "arn:aws:states:::dynamodb:updateItem",
       "Parameters": {
         "TableName": "${jobs_table}",
         "Key": { "jobId": { "S.$": "$.jobId" } },
-        "UpdateExpression": "SET #s = :failed, #e = :error",
+        "UpdateExpression": "SET #s = :failed, #c = :code, #d = :detail",
         "ConditionExpression": "#s IN (:waiting, :processing)",
-        "ExpressionAttributeNames": { "#s": "status", "#e": "error" },
+        "ExpressionAttributeNames": { "#s": "status", "#c": "errorCode", "#d": "errorDetail" },
         "ExpressionAttributeValues": {
           ":failed": { "S": "FAILED" },
           ":waiting": { "S": "AWAITING_UPLOAD" },
           ":processing": { "S": "PROCESSING" },
-          ":error": { "S.$": "$.error.Cause" }
+          ":code": { "S.$": "$.error.Error" },
+          ":detail": { "S.$": "$.error.Cause" }
         }
       },
       "ResultPath": null,

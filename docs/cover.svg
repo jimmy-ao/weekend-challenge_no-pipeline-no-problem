@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="900" viewBox="0 0 1600 900" xmlns:c2pa="http://c2pa.org/manifest">
+<defs>
+  <linearGradient id="sceneBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16213a"/><stop offset="1" stop-color="#334155"/></linearGradient>
+  <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#1e3a8a"/></linearGradient>
+  <linearGradient id="topband" x1="0" x2="1"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#f97316"/></linearGradient>
+  <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#2563eb" stop-opacity="0.35"/><stop offset="1" stop-color="#2563eb" stop-opacity="0"/></radialGradient>
+  <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3" fill="#ffffff" opacity="0.07"/></pattern>
+  <filter id="blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="10"/></filter>
+  <g id="scene">
+<rect width="1500" height="1000" fill="url(#sceneBg)"/>
+<rect x="150" y="90" width="840" height="430" rx="14" fill="#0b1224" stroke="#475569" stroke-width="6"/>
+<rect x="170" y="110" width="800" height="390" rx="8" fill="url(#screen)"/>
+<rect x="220" y="160" width="360" height="34" rx="6" fill="#ffffff" opacity="0.92"/>
+<rect x="220" y="214" width="250" height="18" rx="5" fill="#ffffff" opacity="0.55"/>
+<rect x="240" y="300" width="60" height="150" rx="6" fill="#f97316"/>
+<rect x="320" y="260" width="60" height="190" rx="6" fill="#ffffff" opacity="0.85"/>
+<rect x="400" y="330" width="60" height="120" rx="6" fill="#ffffff" opacity="0.6"/>
+<rect x="480" y="230" width="60" height="220" rx="6" fill="#fb923c"/>
+<circle cx="800" cy="320" r="95" fill="none" stroke="#ffffff" stroke-width="26" opacity="0.85"/>
+<path d="M800 225 A95 95 0 0 1 890 352" fill="none" stroke="#f97316" stroke-width="26"/>
+<polygon points="1080,0 1220,0 1380,760 940,760" fill="#ffffff" opacity="0.07"/>
+<rect x="0" y="700" width="1500" height="300" fill="#1e293b"/>
+<rect x="0" y="700" width="1500" height="10" fill="#475569"/>
+<path d="M1110 560 L1040 470" stroke="#e2e8f0" stroke-width="22" stroke-linecap="round"/>
+<path d="M1090 720 L1090 590 Q1090 530 1160 530 Q1230 530 1230 590 L1230 720 Z" fill="#2563eb"/>
+<circle cx="1160" cy="462" r="50" fill="#e2e8f0"/>
+<circle cx="-40" cy="880" r="58" fill="#0b1224"/><rect x="-110" y="924" width="140" height="140" rx="40" fill="#0b1224"/>
+<circle cx="110" cy="880" r="58" fill="#0b1224"/><rect x="40" y="924" width="140" height="140" rx="40" fill="#0b1224"/>
+<circle cx="260" cy="880" r="58" fill="#0b1224"/><rect x="190" y="924" width="140" height="140" rx="40" fill="#0b1224"/>
+<circle cx="410" cy="880" r="58" fill="#0b1224"/><rect x="340" y="924" width="140" height="140" rx="40" fill="#0b1224"/>
+<circle cx="560" cy="880" r="58" fill="#0b1224"/><rect x="490" y="924" width="140" height="140" rx="40" fill="#0b1224"/>
+<circle cx="710" cy="880" r="58" fill="#0b1224"/><rect x="640" y="924" width="140" height="140" rx="40" fill="#0b1224"/>
+<circle cx="860" cy="880" r="58" fill="#0b1224"/><rect x="790" y="924" width="140" height="140" rx="40" fill="#0b1224"/>
+<circle cx="1010" cy="880" r="58" fill="#0b1224"/><rect x="940" y="924" width="140" height="140" rx="40" fill="#0b1224"/>
+<circle cx="1160" cy="880" r="58" fill="#0b1224"/><rect x="1090" y="924" width="140" height="140" rx="40" fill="#0b1224"/>
+<circle cx="1310" cy="880" r="58" fill="#0b1224"/><rect x="1240" y="924" width="140" height="140" rx="40" fill="#0b1224"/>
+<circle cx="1460" cy="880" r="58" fill="#0b1224"/><rect x="1390" y="924" width="140" height="140" rx="40" fill="#0b1224"/>
+<circle cx="40" cy="975" r="66" fill="#060b17"/><rect x="-38" y="1027" width="156" height="140" rx="40" fill="#060b17"/>
+<circle cx="210" cy="975" r="66" fill="#060b17"/><rect x="132" y="1027" width="156" height="140" rx="40" fill="#060b17"/>
+<circle cx="380" cy="975" r="66" fill="#060b17"/><rect x="302" y="1027" width="156" height="140" rx="40" fill="#060b17"/>
+<circle cx="550" cy="975" r="66" fill="#060b17"/><rect x="472" y="1027" width="156" height="140" rx="40" fill="#060b17"/>
+<circle cx="720" cy="975" r="66" fill="#060b17"/><rect x="642" y="1027" width="156" height="140" rx="40" fill="#060b17"/>
+<circle cx="890" cy="975" r="66" fill="#060b17"/><rect x="812" y="1027" width="156" height="140" rx="40" fill="#060b17"/>
+<circle cx="1060" cy="975" r="66" fill="#060b17"/><rect x="982" y="1027" width="156" height="140" rx="40" fill="#060b17"/>
+<circle cx="1230" cy="975" r="66" fill="#060b17"/><rect x="1152" y="1027" width="156" height="140" rx="40" fill="#060b17"/>
+<circle cx="1400" cy="975" r="66" fill="#060b17"/><rect x="1322" y="1027" width="156" height="140" rx="40" fill="#060b17"/></g>
+</defs>
+<rect width="1600" height="900" fill="#0f172a"/>
+<rect width="1600" height="900" fill="url(#dots)"/>
+<ellipse cx="1190" cy="450" rx="560" ry="460" fill="url(#glow)"/>
+<rect width="1600" height="8" fill="url(#topband)"/>
+
+<!-- wordmark -->
+<rect x="96" y="104" width="44" height="44" rx="9" fill="#f97316"/>
+<polygon points="124,148 140,132 140,148" fill="#0f172a"/>
+<text x="156" y="138" font-family="Plus Jakarta Sans" font-weight="800" font-size="34" fill="#fff" letter-spacing="-0.5">Cropaganda</text>
+
+<!-- headline -->
+<text font-family="Plus Jakarta Sans" font-weight="800" font-size="80" letter-spacing="-2" fill="#fff">
+  <tspan x="92" y="282">One photo.</tspan>
+  <tspan x="92" y="372">Every feed.</tspan>
+  <tspan x="92" y="462" fill="#f97316">On message.</tspan>
+</text>
+<text font-family="Plus Jakarta Sans" font-weight="500" font-size="25" fill="#cbd5e1">
+  <tspan x="96" y="540">Conference photos cropped for every social network,</tspan>
+  <tspan x="96" y="576">branded with your event, ready in seconds.</tspan>
+</text>
+<rect x="96" y="640" width="84.4" height="34" rx="17" fill="#1e293b" stroke="#475569"/><text x="138.2" y="662" text-anchor="middle" font-family="JetBrains Mono" font-weight="500" font-size="15" fill="#cbd5e1">Lambda</text><rect x="190.4" y="640" width="159.6" height="34" rx="17" fill="#1e293b" stroke="#475569"/><text x="270.2" y="662" text-anchor="middle" font-family="JetBrains Mono" font-weight="500" font-size="15" fill="#cbd5e1">Step Functions</text><rect x="360.0" y="640" width="46.8" height="34" rx="17" fill="#1e293b" stroke="#475569"/><text x="383.4" y="662" text-anchor="middle" font-family="JetBrains Mono" font-weight="500" font-size="15" fill="#cbd5e1">S3</text><rect x="416.8" y="640" width="103.2" height="34" rx="17" fill="#1e293b" stroke="#475569"/><text x="468.40000000000003" y="662" text-anchor="middle" font-family="JetBrains Mono" font-weight="500" font-size="15" fill="#cbd5e1">DynamoDB</text><rect x="530.0" y="640" width="131.4" height="34" rx="17" fill="#1e293b" stroke="#475569"/><text x="595.7" y="662" text-anchor="middle" font-family="JetBrains Mono" font-weight="500" font-size="15" fill="#cbd5e1">EventBridge</text><rect x="671.4" y="640" width="112.60000000000001" height="34" rx="17" fill="#1e293b" stroke="#475569"/><text x="727.6999999999999" y="662" text-anchor="middle" font-family="JetBrains Mono" font-weight="500" font-size="15" fill="#cbd5e1">Terraform</text>
+
+<!-- footer -->
+<text x="96" y="826" font-family="JetBrains Mono" font-weight="600" font-size="16" letter-spacing="1.5" fill="#94a3b8">AWS WEEKEND CHALLENGE · NO PIPELINE, NO PROBLEM</text>
+<text x="96" y="852" font-family="JetBrains Mono" font-weight="500" font-size="15" fill="#64748b">serverless · scales to zero · zero servers to patch</text>
+
+<!-- right side -->
+<path d="M1200 218.0 C1230 218.0 1225 178.5 1255 178.5" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="5 6"/><circle cx="1255" cy="178.5" r="5" fill="#f97316"/><path d="M1200 218.0 C1230 218.0 1225 368.0 1255 368.0" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="5 6"/><circle cx="1255" cy="368.0" r="5" fill="#f97316"/><path d="M1035.0 328 C1035.0 398 960.0 400 960.0 470" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="5 6"/><circle cx="960.0" cy="470" r="5" fill="#f97316"/><path d="M1035.0 328 C1035.0 398 1180.0 470 1180.0 540" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="5 6"/><circle cx="1180.0" cy="540" r="5" fill="#f97316"/><path d="M1035.0 328 C1035.0 398 1410.0 520 1410.0 590" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="5 6"/><circle cx="1410.0" cy="590" r="5" fill="#f97316"/><circle cx="1035.0" cy="328" r="7" fill="#2563eb" stroke="#fff" stroke-width="2"/><circle cx="1200" cy="218.0" r="7" fill="#2563eb" stroke="#fff" stroke-width="2"/>
+<clipPath id="clip1"><rect x="870" y="108" width="330" height="220" rx="10"/></clipPath>
+<rect x="874" y="118" width="330" height="220" rx="10" fill="#000" opacity="0.35" filter="url(#blur)"/>
+<g clip-path="url(#clip1)">
+<svg x="870" y="108" width="330" height="220" viewBox="0.0 0.0 1500.0 1000.0" preserveAspectRatio="none"><use href="#scene"/></svg>
+</g>
+<rect x="870" y="108" width="330" height="220" rx="10" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="1.5"/>
+<rect x="880" y="118" width="123.19999999999999" height="24" rx="12" fill="#0f172a" opacity="0.85"/>
+<text x="941.6" y="134.5" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="13" fill="#fff">original.jpg</text><clipPath id="clip2"><rect x="1255" y="108" width="270" height="141" rx="10"/></clipPath>
+<rect x="1259" y="118" width="270" height="141" rx="10" fill="#000" opacity="0.35" filter="url(#blur)"/>
+<g clip-path="url(#clip2)">
+<svg x="1255" y="108" width="270" height="141" viewBox="0.0 88.3 1500.0 783.3" preserveAspectRatio="none"><use href="#scene"/></svg>
+<rect x="1255" y="219.95" width="270" height="22" fill="#0f172a" opacity="0.88"/>
+<rect x="1255" y="219.95" width="5" height="22" fill="#f97316"/>
+<text x="1271.2" y="229.85" font-family="Plus Jakarta Sans" font-weight="800" font-size="7.92" fill="#fff">CLOUD CONF 2026</text>
+<text x="1271.2" y="237.54999999999998" font-family="JetBrains Mono" font-weight="500" font-size="5.7024" fill="#fb923c">#cloudconf · Stockholm</text>
+</g>
+<rect x="1255" y="108" width="270" height="141" rx="10" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="1.5"/>
+<rect x="1265" y="118" width="71.6" height="24" rx="12" fill="#0f172a" opacity="0.85"/>
+<text x="1300.8" y="134.5" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="13" fill="#fff">1.91:1</text><clipPath id="clip3"><rect x="1255" y="292" width="270" height="152" rx="10"/></clipPath>
+<rect x="1259" y="302" width="270" height="152" rx="10" fill="#000" opacity="0.35" filter="url(#blur)"/>
+<g clip-path="url(#clip3)">
+<svg x="1255" y="292" width="270" height="152" viewBox="0.0 57.8 1500.0 844.4" preserveAspectRatio="none"><use href="#scene"/></svg>
+<rect x="1255" y="414.4" width="270" height="22" fill="#0f172a" opacity="0.88"/>
+<rect x="1255" y="414.4" width="5" height="22" fill="#f97316"/>
+<text x="1271.2" y="424.29999999999995" font-family="Plus Jakarta Sans" font-weight="800" font-size="7.92" fill="#fff">CLOUD CONF 2026</text>
+<text x="1271.2" y="432.0" font-family="JetBrains Mono" font-weight="500" font-size="5.7024" fill="#fb923c">#cloudconf · Stockholm</text>
+</g>
+<rect x="1255" y="292" width="270" height="152" rx="10" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="1.5"/>
+<rect x="1265" y="302" width="54.4" height="24" rx="12" fill="#0f172a" opacity="0.85"/>
+<text x="1292.2" y="318.5" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="13" fill="#fff">16:9</text><clipPath id="clip4"><rect x="870" y="470" width="180" height="320" rx="10"/></clipPath>
+<rect x="874" y="480" width="180" height="320" rx="10" fill="#000" opacity="0.35" filter="url(#blur)"/>
+<g clip-path="url(#clip4)">
+<svg x="870" y="470" width="180" height="320" viewBox="718.8 0.0 562.5 1000.0" preserveAspectRatio="none"><use href="#scene"/></svg>
+<rect x="870" y="732.4" width="180" height="41.6" fill="#0f172a" opacity="0.88"/>
+<rect x="870" y="732.4" width="5" height="41.6" fill="#f97316"/>
+<text x="880.8" y="751.12" font-family="Plus Jakarta Sans" font-weight="800" font-size="14.975999999999999" fill="#fff">CLOUD CONF 2026</text>
+<text x="880.8" y="765.68" font-family="JetBrains Mono" font-weight="500" font-size="10.78272" fill="#fb923c">#cloudconf · Stockholm</text>
+</g>
+<rect x="870" y="470" width="180" height="320" rx="10" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="1.5"/>
+<rect x="880" y="480" width="54.4" height="24" rx="12" fill="#0f172a" opacity="0.85"/>
+<text x="907.2" y="496.5" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="13" fill="#fff">9:16</text><clipPath id="clip5"><rect x="1080" y="540" width="200" height="250" rx="10"/></clipPath>
+<rect x="1084" y="550" width="200" height="250" rx="10" fill="#000" opacity="0.35" filter="url(#blur)"/>
+<g clip-path="url(#clip5)">
+<svg x="1080" y="540" width="200" height="250" viewBox="600.0 0.0 800.0 1000.0" preserveAspectRatio="none"><use href="#scene"/></svg>
+<rect x="1080" y="745.0" width="200" height="32.5" fill="#0f172a" opacity="0.88"/>
+<rect x="1080" y="745.0" width="5" height="32.5" fill="#f97316"/>
+<text x="1092.0" y="759.625" font-family="Plus Jakarta Sans" font-weight="800" font-size="11.7" fill="#fff">CLOUD CONF 2026</text>
+<text x="1092.0" y="771.0" font-family="JetBrains Mono" font-weight="500" font-size="8.424" fill="#fb923c">#cloudconf · Stockholm</text>
+</g>
+<rect x="1080" y="540" width="200" height="250" rx="10" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="1.5"/>
+<rect x="1090" y="550" width="45.8" height="24" rx="12" fill="#0f172a" opacity="0.85"/>
+<text x="1112.9" y="566.5" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="13" fill="#fff">4:5</text><clipPath id="clip6"><rect x="1310" y="590" width="200" height="200" rx="10"/></clipPath>
+<rect x="1314" y="600" width="200" height="200" rx="10" fill="#000" opacity="0.35" filter="url(#blur)"/>
+<g clip-path="url(#clip6)">
+<svg x="1310" y="590" width="200" height="200" viewBox="500.0 0.0 1000.0 1000.0" preserveAspectRatio="none"><use href="#scene"/></svg>
+<rect x="1310" y="754.0" width="200" height="26.0" fill="#0f172a" opacity="0.88"/>
+<rect x="1310" y="754.0" width="5" height="26.0" fill="#f97316"/>
+<text x="1322.0" y="765.7" font-family="Plus Jakarta Sans" font-weight="800" font-size="9.36" fill="#fff">CLOUD CONF 2026</text>
+<text x="1322.0" y="774.8" font-family="JetBrains Mono" font-weight="500" font-size="6.739199999999999" fill="#fb923c">#cloudconf · Stockholm</text>
+</g>
+<rect x="1310" y="590" width="200" height="200" rx="10" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="1.5"/>
+<rect x="1320" y="600" width="45.8" height="24" rx="12" fill="#0f172a" opacity="0.85"/>
+<text x="1342.9" y="616.5" text-anchor="middle" font-family="JetBrains Mono" font-weight="600" font-size="13" fill="#fff">1:1</text>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTpmMGRlN2UwMy1hMzI1LTRiODItYjc2ZC0yYWZkMWFlNzI2ZTkAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaE7bdSALlm2gThoEliJIr84AAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDpkYzY2MTZkZC03NWZiLTQ1MjEtYjE3ZS1jNzJmZGUxZDNhNjBscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoxigt868u03UgccJIGkkTXQAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggRoCr6Vra0RooPXWKqTObgJOGYMKZAqF0ijcMKyBz5ZikZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaM3ZaEpO3g4BQGfCQtSqpj4AAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIOeC0OuybINiuqefSETKtZNcppRxzHO2VVElQXrpuHnwZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GTtJZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOmYwZGU3ZTAzLWEzMjUtNGI4Mi1iNzZkLTJhZmQxYWU3MjZlOS9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjc2YWQ4NjEzLTA2OTktNDUxYy04MGNjLTgyZWQ2YjZjOTM3Y3JjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCBGgKvpWtrRGig9dYqpM5uAk4ZgwpkCoXSKNwwrIHPlmKJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFgg2cb7ecRMTNfzxgGuylFJvpysvdOV3nETKywf2OVfO5GiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFgg5SK+RoK9jQKaj54WVbU8KBp98yt4EWR1dIjRHhet7290Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQA98QOYUbBJwUlxuI0TmRUjEJ3LbUzRpv8ozgI9gfzQcJi2/64FVrvlugGpGsBJjBRo86dBtDZVxClDCJ5B0I0U=</c2pa:manifest></metadata></svg>

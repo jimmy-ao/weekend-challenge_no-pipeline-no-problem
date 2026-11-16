@@ -177,10 +177,10 @@
   </main>
 
   <dialog class="dialog" id="event-dialog">
-    <form method="dialog" id="event-form">
+    <form method="dialog" id="event-form" novalidate>
       <header class="dialog__head">
         <h2 id="event-dialog-title">New event</h2>
-        <button class="btn btn--ghost btn--small" value="cancel" type="submit" formnovalidate aria-label="Close">✕</button>
+        <button class="btn btn--ghost btn--small" type="button" data-close-dialog aria-label="Close">✕</button>
       </header>
       <div class="dialog__body">
         <div class="form-grid" id="event-fields" data-mode="generated">
@@ -240,7 +240,7 @@
       <footer class="dialog__foot">
         <button class="btn btn--danger" id="delete-event-btn" type="button" hidden>Delete event</button>
         <span class="spacer"></span>
-        <button class="btn btn--ghost" value="cancel" type="submit" formnovalidate>Cancel</button>
+        <button class="btn btn--ghost" type="button" data-close-dialog>Cancel</button>
         <button class="btn btn--primary" id="save-event-btn" value="save" type="submit">Save event</button>
       </footer>
     </form>

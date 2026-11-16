@@ -14,6 +14,7 @@ import logging
 import os
 import re
 import time
+import uuid
 import zipfile
 
 import boto3
@@ -67,6 +68,10 @@ def _decimal_to_float(value) -> float:
 def prepare(event, _context):
     job_id = event["jobId"]
     key = event["key"]
+    # Name of the Step Functions execution (ParseKey adds it). The lock below belongs to it, so a
+    # retry of this task by the same execution gets the lock back; without that the retry would be
+    # taken for a duplicate upload and the job would stay PROCESSING.
+    execution = event.get("executionId") or uuid.uuid4().hex
     log.info("prepare job=%s key=%s", job_id, key)
 
     job = jobs.get_item(Key={"jobId": job_id}).get("Item")
@@ -83,10 +88,15 @@ def prepare(event, _context):
     try:
         jobs.update_item(
             Key={"jobId": job_id},
-            UpdateExpression="SET #s = :processing, startedAt = :now",
-            ConditionExpression="#s = :waiting",
+            UpdateExpression="SET #s = :processing, startedAt = :now, lockedBy = :exec",
+            ConditionExpression="#s = :waiting OR (#s = :processing AND lockedBy = :exec)",
             ExpressionAttributeNames={"#s": "status"},
-            ExpressionAttributeValues={":processing": "PROCESSING", ":waiting": "AWAITING_UPLOAD", ":now": int(time.time())},
+            ExpressionAttributeValues={
+                ":processing": "PROCESSING",
+                ":waiting": "AWAITING_UPLOAD",
+                ":now": int(time.time()),
+                ":exec": execution,
+            },
         )
     except ClientError as exc:
         if exc.response["Error"]["Code"] == "ConditionalCheckFailedException":
@@ -98,7 +108,9 @@ def prepare(event, _context):
     try:
         photo = imaging.load_photo(body)
     except Exception as exc:  # Pillow raises many types for bad input
-        raise InvalidUpload(f"cannot read the photo: {exc}") from exc
+        # The message is shown to the producer: keep the decoder's own text in the logs only.
+        log.warning("job=%s unreadable photo: %s", job_id, exc)
+        raise InvalidUpload("This file could not be read. Use a JPEG, PNG or WebP photo of at most 120 megapixels.") from exc
 
     ev = events.get_item(Key={"eventId": job["eventId"]}).get("Item") if job.get("eventId") else None
     formats = [f for f in job.get("formats", []) if f in FORMATS] or list(FORMATS)
