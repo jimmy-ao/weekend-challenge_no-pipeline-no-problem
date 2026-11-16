@@ -3,7 +3,6 @@
 # provider used to deploy: workload account, project region (everything except the items below)
 provider "aws" {
   region  = var.region
-  profile = var.profile
 
   default_tags {
     tags = local.tags
@@ -14,7 +13,6 @@ provider "aws" {
 provider "aws" {
   alias   = "use1"
   region  = "us-east-1"
-  profile = var.profile
 
   default_tags {
     tags = local.tags
@@ -25,7 +23,10 @@ provider "aws" {
 provider "aws" {
   alias   = "r53"
   region  = "us-east-1"
-  profile = var.profile_r53
+
+  assume_role {
+    role_arn = "arn:aws:iam::203918869615:role/p-r53-glb-allow-record-create"
+  }
 
   default_tags {
     tags = local.tags
