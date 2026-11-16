@@ -1,0 +1,16 @@
+# Copy to terraform.auto.tfvars (git-ignored). Every value has a default, so only the
+# Route 53 profile is usually needed.
+
+# profile     = "<workload-account-profile>" # or leave unset and use AWS_PROFILE / SSO env
+profile_r53 = "<route53-account-profile>" # account that owns the archnops.com zone
+
+# environment      = "prd"         # prd, npe, uat, lab, tst, sbx (first letter prefixes every name)
+# region           = "eu-north-1"
+# domain_name      = "cropaganda.archnops.com"
+# hosted_zone_name = "archnops.com"
+
+producer_emails = ["you@example.com"]
+
+# retention_days  = 7
+# max_upload_mb   = 25
+# allow_localhost = true

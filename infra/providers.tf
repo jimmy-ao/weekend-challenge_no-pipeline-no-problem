@@ -1,0 +1,33 @@
+# providers
+
+# provider used to deploy: workload account, project region (everything except the items below)
+provider "aws" {
+  region  = var.region
+  profile = var.profile
+
+  default_tags {
+    tags = local.tags
+  }
+}
+
+# provider used to create the certificate: workload account, us-east-1 (CloudFront only accepts ACM certificates from there)
+provider "aws" {
+  alias   = "use1"
+  region  = "us-east-1"
+  profile = var.profile
+
+  default_tags {
+    tags = local.tags
+  }
+}
+
+# provider used to handle route53 resources: the account holding the public hosted zone (archnops.com), DNS records only
+provider "aws" {
+  alias   = "r53"
+  region  = "us-east-1"
+  profile = var.profile_r53
+
+  default_tags {
+    tags = local.tags
+  }
+}

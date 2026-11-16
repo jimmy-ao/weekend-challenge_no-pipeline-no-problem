@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cropaganda — one photo, every feed</title>
+  <meta name="description" content="Resize conference photos for every social network and stamp them with the event overlay.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/PlusJakartaSans-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="./" aria-label="Cropaganda home">
+      <span class="wordmark__block" aria-hidden="true"></span>
+      <span class="wordmark__text">Cropaganda</span>
+    </a>
+    <p class="masthead__tagline">One photo. Every feed. On message.</p>
+    <div class="masthead__user" id="user-box" hidden>
+      <span id="user-email"></span>
+      <button class="btn btn--ghost btn--small" id="logout-btn" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Signed out -->
+    <section class="hero" id="hero" hidden>
+      <div class="hero__copy">
+        <p class="kicker">For conference content producers</p>
+        <h1>Shoot once.<br><em>Post everywhere.</em></h1>
+        <p class="lede">Upload a photo from the venue floor. Cropaganda crops it for Instagram, Stories, LinkedIn, X, Facebook, Bluesky and Mastodon, stamps the event banner on every version, and hands you a zip.</p>
+        <div class="hero__art" aria-hidden="true">
+          <div class="frame frame--story"></div>
+          <div class="frame frame--square"></div>
+          <div class="frame frame--wide"></div>
+        </div>
+      </div>
+
+      <div class="auth-card" id="auth-card">
+        <!-- 1. Sign in -->
+        <form class="auth-step" id="signin-form" data-step="signin" novalidate>
+          <h2>Sign in</h2>
+          <p class="auth-sub">Invite only. Use the email your organiser invited.</p>
+          <label class="field">Email
+            <input type="email" name="email" autocomplete="username" required inputmode="email" spellcheck="false">
+          </label>
+          <label class="field">Password
+            <span class="pw">
+              <input type="password" name="password" autocomplete="current-password" required>
+              <button class="pw__toggle" type="button" aria-label="Show password" data-toggle-pw>Show</button>
+            </span>
+          </label>
+          <p class="auth-error" role="alert" hidden></p>
+          <button class="btn btn--primary btn--large btn--block" type="submit">Sign in</button>
+          <button class="link auth-link" type="button" data-goto="forgot">Forgot password?</button>
+        </form>
+
+        <!-- 2. First sign-in: replace the invitation password -->
+        <form class="auth-step" id="newpw-form" data-step="newpw" novalidate hidden>
+          <h2>Choose your password</h2>
+          <p class="auth-sub">Welcome! Replace the temporary password from your invitation.</p>
+          <label class="field">New password
+            <span class="pw">
+              <input type="password" name="password" autocomplete="new-password" required data-rules>
+              <button class="pw__toggle" type="button" aria-label="Show password" data-toggle-pw>Show</button>
+            </span>
+          </label>
+          <ul class="rules" aria-live="polite"></ul>
+          <label class="field">Repeat it
+            <input type="password" name="confirm" autocomplete="new-password" required>
+          </label>
+          <p class="auth-error" role="alert" hidden></p>
+          <button class="btn btn--primary btn--large btn--block" type="submit">Save and continue</button>
+          <button class="link auth-link" type="button" data-goto="signin">Back to sign in</button>
+        </form>
+
+        <!-- 3. Forgot password: ask for a code -->
+        <form class="auth-step" id="forgot-form" data-step="forgot" novalidate hidden>
+          <h2>Reset your password</h2>
+          <p class="auth-sub">We will email you a 6-digit code.</p>
+          <label class="field">Email
+            <input type="email" name="email" autocomplete="username" required inputmode="email" spellcheck="false">
+          </label>
+          <p class="auth-error" role="alert" hidden></p>
+          <button class="btn btn--primary btn--large btn--block" type="submit">Send code</button>
+          <button class="link auth-link" type="button" data-goto="signin">Back to sign in</button>
+        </form>
+
+        <!-- 4. Forgot password: code + new password -->
+        <form class="auth-step" id="reset-form" data-step="reset" novalidate hidden>
+          <h2>Enter the code</h2>
+          <p class="auth-sub">If <strong data-email></strong> has an account, a code is on its way.</p>
+          <label class="field">Code
+            <input name="code" autocomplete="one-time-code" inputmode="numeric" required maxlength="10" spellcheck="false">
+          </label>
+          <label class="field">New password
+            <span class="pw">
+              <input type="password" name="password" autocomplete="new-password" required data-rules>
+              <button class="pw__toggle" type="button" aria-label="Show password" data-toggle-pw>Show</button>
+            </span>
+          </label>
+          <ul class="rules" aria-live="polite"></ul>
+          <p class="auth-error" role="alert" hidden></p>
+          <button class="btn btn--primary btn--large btn--block" type="submit">Set new password</button>
+          <button class="link auth-link" type="button" data-goto="forgot">Send a new code</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Signed in -->
+    <section class="workspace" id="workspace" hidden>
+      <div class="panel steps">
+        <div class="step">
+          <h2 class="step__title"><span class="step__num">1</span>Event</h2>
+          <div class="row">
+            <label class="sr-only" for="event-select">Event overlay</label>
+            <select id="event-select"></select>
+            <button class="btn btn--ghost" id="edit-event-btn" type="button">Edit</button>
+            <button class="btn btn--ghost" id="new-event-btn" type="button">New</button>
+          </div>
+        </div>
+
+        <div class="step">
+          <h2 class="step__title"><span class="step__num">2</span>Photo</h2>
+          <label class="dropzone" id="dropzone">
+            <input type="file" id="photo-input" accept="image/jpeg,image/png,image/webp">
+            <span class="dropzone__empty" id="dropzone-empty">
+              <strong>Drop a photo here</strong> or click to choose<br>
+              <small>JPEG, PNG or WebP · up to <span id="max-mb">25</span> MB</small>
+            </span>
+            <span class="focus" id="focus" hidden>
+              <img id="focus-img" alt="Selected photo">
+              <span class="focus__marker" id="focus-marker" aria-hidden="true"></span>
+            </span>
+          </label>
+          <p class="hint" id="focus-hint" hidden>Click the subject: every crop keeps that point in frame. <button class="link" id="change-photo" type="button">Change photo</button></p>
+        </div>
+
+        <div class="step">
+          <h2 class="step__title"><span class="step__num">3</span>Formats</h2>
+          <div class="chips" id="format-chips"></div>
+        </div>
+
+        <div class="step step--go">
+          <button class="btn btn--primary btn--large btn--block" id="generate-btn" type="button" disabled>Generate</button>
+          <div class="progress" id="progress" hidden>
+            <div class="progress__bar"><span id="progress-fill"></span></div>
+            <p class="progress__label" id="progress-label"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel previews">
+        <div class="previews__head">
+          <h2>Preview</h2>
+          <p class="hint">Approximate. The final files are rendered in full resolution on AWS.</p>
+        </div>
+        <div class="preview-grid" id="preview-grid"></div>
+      </div>
+    </section>
+
+    <section class="results" id="results" hidden>
+      <div class="results__head">
+        <h2>Ready to post</h2>
+        <a class="btn btn--primary" id="zip-link" href="#" download>Download all (.zip)</a>
+      </div>
+      <div class="result-grid" id="result-grid"></div>
+    </section>
+
+    <section class="history" id="history" hidden>
+      <h2>Recent batches</h2>
+      <p class="hint" id="retention-hint"></p>
+      <ul class="history__list" id="history-list"></ul>
+    </section>
+  </main>
+
+  <dialog class="dialog" id="event-dialog">
+    <form method="dialog" id="event-form">
+      <header class="dialog__head">
+        <h2 id="event-dialog-title">New event</h2>
+        <button class="btn btn--ghost btn--small" value="cancel" type="submit" formnovalidate aria-label="Close">✕</button>
+      </header>
+      <div class="dialog__body">
+        <div class="form-grid" id="event-fields" data-mode="generated">
+          <label class="field field--wide">Event name
+            <input name="name" required maxlength="80" placeholder="AWS Community Day Nordics 2026">
+          </label>
+          <fieldset class="field field--wide segmented">
+            <legend>Banner</legend>
+            <label><input type="radio" name="bannerMode" value="generated" checked> Generated</label>
+            <label><input type="radio" name="bannerMode" value="banner"> My banner strip</label>
+            <label><input type="radio" name="bannerMode" value="frame"> My full frame</label>
+          </fieldset>
+          <div class="field field--wide frame-only">
+            <span>Frame images <small>(PNG with a transparent window, max 8 MB each)</small></span>
+            <div class="frame-slots" id="frame-slots"></div>
+            <p class="hint">Each frame is scaled to cover the whole photo. Upload one per shape for pixel-perfect results; a shape without its own frame borrows the closest one, stretched to fit.</p>
+          </div>
+          <div class="field field--wide banner-only">
+            <span>Banner image <small>(PNG, JPEG or WebP, max 5 MB)</small></span>
+            <input type="file" name="banner" id="banner-input" accept="image/png,image/jpeg,image/webp">
+            <p class="hint" id="banner-current" hidden>Current banner kept unless you choose a new file.</p>
+            <p class="hint">Use a wide strip, about 8:1 and at least 2000 px wide; transparency is kept. It is stretched to the full width of every format and kept clear of each network's UI zones. Taller images are scaled down to 35 % of the height.</p>
+          </div>
+          <label class="field gen-only">Date
+            <input name="dateLabel" maxlength="40" placeholder="14 Nov 2026">
+          </label>
+          <label class="field gen-only">Location
+            <input name="location" maxlength="60" placeholder="Stockholm">
+          </label>
+          <label class="field gen-only">Hashtag
+            <input name="hashtag" maxlength="41" placeholder="#AWSCommunityDay" pattern="#?[\p{L}\p{N}_]{1,40}">
+          </label>
+          <label class="field no-frame">Banner position
+            <select name="position">
+              <option value="bottom">Bottom</option>
+              <option value="top">Top</option>
+            </select>
+          </label>
+          <div class="field field--wide colors gen-only">
+            <label>Banner <input type="color" name="primaryColor" value="#111827"></label>
+            <label>Accent <input type="color" name="accentColor" value="#f59e0b"></label>
+            <label>Text <input type="color" name="textColor" value="#ffffff"></label>
+          </div>
+          <div class="field field--wide gen-only">
+            <span>Logo <small>(PNG with transparency works best, max 2 MB)</small></span>
+            <div class="row">
+              <input type="file" name="logo" id="logo-input" accept="image/png,image/jpeg,image/webp">
+              <label class="check" id="remove-logo-wrap" hidden><input type="checkbox" name="removeLogo"> Remove current logo</label>
+            </div>
+          </div>
+        </div>
+        <div class="dialog__side">
+          <canvas class="dialog__preview" id="event-preview" aria-label="Overlay preview"></canvas>
+          <div class="frame-previews" id="frame-previews"></div>
+        </div>
+      </div>
+      <footer class="dialog__foot">
+        <button class="btn btn--danger" id="delete-event-btn" type="button" hidden>Delete event</button>
+        <span class="spacer"></span>
+        <button class="btn btn--ghost" value="cancel" type="submit" formnovalidate>Cancel</button>
+        <button class="btn btn--primary" id="save-event-btn" value="save" type="submit">Save event</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <footer class="colophon">
+    Serverless on AWS: Lambda · API Gateway · Step Functions · DynamoDB · S3 · Cognito · CloudFront
+  </footer>
+</body>
+</html>

@@ -1,0 +1,75 @@
+{
+  "_comment": "Predefined social-network output formats. safeTop/safeBottom are fractions of the height kept free of overlay text because the platform draws its own UI there. frame: which full-frame overlay slot (square | portrait | story | landscape) the format uses.",
+  "formats": [
+    {
+      "id": "instagram-square",
+      "label": "Instagram post (square)",
+      "network": "Instagram",
+      "width": 1080,
+      "height": 1080,
+      "safeTop": 0,
+      "safeBottom": 0,
+      "frame": "square"
+    },
+    {
+      "id": "instagram-portrait",
+      "label": "Instagram post (portrait 4:5)",
+      "network": "Instagram",
+      "width": 1080,
+      "height": 1350,
+      "safeTop": 0,
+      "safeBottom": 0,
+      "frame": "portrait"
+    },
+    {
+      "id": "story",
+      "label": "Story / Reels / TikTok (9:16)",
+      "network": "Instagram, Facebook, TikTok",
+      "width": 1080,
+      "height": 1920,
+      "safeTop": 0.13,
+      "safeBottom": 0.18,
+      "frame": "story"
+    },
+    {
+      "id": "linkedin",
+      "label": "LinkedIn post",
+      "network": "LinkedIn",
+      "width": 1200,
+      "height": 627,
+      "safeTop": 0,
+      "safeBottom": 0,
+      "frame": "landscape"
+    },
+    {
+      "id": "x",
+      "label": "X post (16:9)",
+      "network": "X",
+      "width": 1600,
+      "height": 900,
+      "safeTop": 0,
+      "safeBottom": 0,
+      "frame": "landscape"
+    },
+    {
+      "id": "facebook",
+      "label": "Facebook post",
+      "network": "Facebook",
+      "width": 1200,
+      "height": 630,
+      "safeTop": 0,
+      "safeBottom": 0,
+      "frame": "landscape"
+    },
+    {
+      "id": "bluesky-mastodon",
+      "label": "Bluesky / Mastodon (16:9)",
+      "network": "Bluesky, Mastodon",
+      "width": 1200,
+      "height": 675,
+      "safeTop": 0,
+      "safeBottom": 0,
+      "frame": "landscape"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+[project]
+name = "cropaganda"
+version = "0.1.0"
+description = "Resize conference photos for every social network and stamp them with the event overlay (serverless AWS)."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+# Packaged into the pipeline Lambdas by scripts/build.sh (boto3 comes with the Lambda runtime).
+pipeline = ["pillow==12.0.0"]
+dev = [
+    { include-group = "pipeline" },
+    "boto3>=1.35",
+    "moto[s3,dynamodb]>=5.0",
+    "pytest>=8.0",
+]
+
+[tool.uv]
+package = false
+default-groups = ["dev"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

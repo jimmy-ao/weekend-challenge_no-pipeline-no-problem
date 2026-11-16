@@ -1,0 +1,12 @@
+build/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+backend.hcl
+frontend/config.js
+__pycache__/
+.pytest_cache/
+.venv/
+.DS_Store
+.envrc

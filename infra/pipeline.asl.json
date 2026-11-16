@@ -1,0 +1,131 @@
+{
+  "Comment": "Cropaganda: render one uploaded photo into every selected social-network format, with the event overlay.",
+  "TimeoutSeconds": 600,
+  "StartAt": "ParseKey",
+  "States": {
+    "ParseKey": {
+      "Type": "Pass",
+      "Comment": "uploads/<jobId>/original -> jobId",
+      "Parameters": {
+        "bucket.$": "$.bucket",
+        "key.$": "$.key",
+        "jobId.$": "States.ArrayGetItem(States.StringSplit($.key, '/'), 1)"
+      },
+      "Next": "Prepare"
+    },
+    "Prepare": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${prepare_arn}",
+        "Payload.$": "$"
+      },
+      "OutputPath": "$.Payload",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        { "ErrorEquals": ["DuplicateUpload"], "Next": "IgnoreDuplicate" },
+        { "ErrorEquals": ["States.ALL"], "ResultPath": "$.error", "Next": "MarkFailed" }
+      ],
+      "Next": "RenderFormats"
+    },
+    "RenderFormats": {
+      "Type": "Map",
+      "ItemsPath": "$.formats",
+      "MaxConcurrency": 8,
+      "ItemSelector": {
+        "format.$": "$$.Map.Item.Value",
+        "job.$": "$"
+      },
+      "ItemProcessor": {
+        "ProcessorConfig": { "Mode": "INLINE" },
+        "StartAt": "Render",
+        "States": {
+          "Render": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "Parameters": {
+              "FunctionName": "${render_arn}",
+              "Payload.$": "$"
+            },
+            "OutputPath": "$.Payload",
+            "Retry": [
+              {
+                "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"],
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3,
+                "BackoffRate": 2
+              }
+            ],
+            "End": true
+          }
+        }
+      },
+      "ResultPath": "$.outputs",
+      "Catch": [
+        { "ErrorEquals": ["States.ALL"], "ResultPath": "$.error", "Next": "MarkFailed" }
+      ],
+      "Next": "Package"
+    },
+    "Package": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${package_arn}",
+        "Payload": {
+          "job.$": "$",
+          "outputs.$": "$.outputs"
+        }
+      },
+      "OutputPath": "$.Payload",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        { "ErrorEquals": ["States.ALL"], "ResultPath": "$.error", "Next": "MarkFailed" }
+      ],
+      "End": true
+    },
+    "MarkFailed": {
+      "Type": "Task",
+      "Comment": "Direct DynamoDB integration: no Lambda needed to record the failure on the job.",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "${jobs_table}",
+        "Key": { "jobId": { "S.$": "$.jobId" } },
+        "UpdateExpression": "SET #s = :failed, #e = :error",
+        "ConditionExpression": "#s IN (:waiting, :processing)",
+        "ExpressionAttributeNames": { "#s": "status", "#e": "error" },
+        "ExpressionAttributeValues": {
+          ":failed": { "S": "FAILED" },
+          ":waiting": { "S": "AWAITING_UPLOAD" },
+          ":processing": { "S": "PROCESSING" },
+          ":error": { "S.$": "$.error.Cause" }
+        }
+      },
+      "ResultPath": null,
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "Failed" }],
+      "Next": "Failed"
+    },
+    "IgnoreDuplicate": {
+      "Type": "Succeed",
+      "Comment": "Same presigned form posted twice: the first execution owns the job."
+    },
+    "Failed": {
+      "Type": "Fail",
+      "Error": "PipelineFailed",
+      "Cause": "See the job's error attribute and the state machine logs."
+    }
+  }
+}
